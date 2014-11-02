@@ -1,0 +1,455 @@
+<html ng-app="NgTheListValues">
+  <head>
+    <title>The List Values</title>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-touch.js"></script>
+    <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.2.min.js"></script>
+    <script src="http://angular-ui.github.io/ui-router/release/angular-ui-router.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <style media="all" type="text/css">
+
+      #container {
+        left: 0;
+        padding: 10px;
+        min-height: 600px;
+      }
+
+      #header {
+        background: #336A94;
+        padding-left: 20px;
+        margin: 0;
+        color: white;
+      }
+
+      .the-list-font {
+        color: #00467E;
+      }
+
+      #logo {
+        padding-top: 10px;
+        width: 60%;
+      }
+
+      #container.move-right {
+        left: 300px;
+        transition: left 0.5s linear;
+        -webkit-transition: left 0.5s linear;
+      }
+
+      #container.move-left {
+        left: -300px;
+        transition: left 0.5s linear;
+        -webkit-transition: left 0.5s linear;
+      }
+
+      .page-switch-link {
+        padding-top: 10px;
+      }
+
+      .page-switch-link hr {
+        margin-top: 10px;
+      }
+
+      .page-switch-link a {
+        padding-left: 5px;
+      }
+
+      .fixed-link {
+        position: fixed;
+        top: 0;
+        width: 96%;
+        background: #fff;
+      }
+
+      .fixed-link hr {
+        margin-bottom: 0px;
+      }
+
+      .large-font {
+        font-size: 16px;
+      }
+
+      .glyphicon-chevron-right, .glyphicon-chevron-down {
+        font-size: 0.8em;
+        z-index: -1;
+      }
+
+      .topic {
+        padding-bottom: 10px;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div
+      id="container"
+      class="container-fluid col-xs-12 the-list-font"
+      ng-controller="NgTheListValuesMainCtrl" 
+      ng-swipe-right="swipeRight($event)" ng-swipe-left="swipeLeft($event)"
+    >
+      <section ui-view></section>
+    </div>
+  </body>
+
+  <script type="text/ng-template" id="this_week.html">
+    <div id="header" class='row'>
+      <img id="logo" src="https://s3.amazonaws.com/the-list/images/tlo-logo-white-transparent.png" alt="The List Logo">
+      <h3>A Guide to Our Collective Success</h3>
+      <h5>Week {{weekStart}} - {{weekEnd}}</h5>
+    </div>
+
+    <div class="page-switch-link">
+      <a href="#" ng-click="swipeRight($event)"><span class="glyphicon glyphicon-arrow-left"></span> Swipe for all values <span class="glyphicon glyphicon-arrow-right"></span></a>
+      <hr />
+    </div>
+
+    <div>
+      <h2>{{currentTopicTitle}}</h2>
+    </div>
+    <div class="large-font">
+      <i>{{currentTopicText}}</i>
+    </div>
+
+    <div>
+      <h3>{{currentTitle}}</h3>
+    </div>
+    <div class="large-font">
+      {{currentText}}
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="all.html">
+    <div id="header" class='row'>
+      <img id="logo" src="https://s3.amazonaws.com/the-list/images/tlo-logo-white-transparent.png" alt="The List Logo">
+      <h3>A Guide to Our Collective Success</h3>
+    </div>
+
+    <div class="page-switch-link" id="this-week-link">
+      <a href="#" ng-click="swipeLeft($event)"><span class="glyphicon glyphicon-arrow-left"></span> Swipe for this week value <span class="glyphicon glyphicon-arrow-right"></span></a>
+      <hr />
+    </div>
+    <div id="link-filler"></div>
+
+    <div ng-repeat="topic in topics" class="topic">
+      <h2 ng-click="isCollapsed = !isCollapsed"><span class="glyphicon" ng-class="{'glyphicon-chevron-down': !isCollapsed, 'glyphicon-chevron-right': isCollapsed}"></span>&nbsp;{{topic.title}}</h2>
+      <div class="large-font" ng-click="isCollapsed = !isCollapsed"><i>{{topic.text}}</i></div>
+
+      <div ng-repeat="value in topic.values" collapse="isCollapsed">
+        <h3>{{value.title}}</h3>
+        <div class="large-font">{{value.text}}</div>
+      </div>
+      <hr/>
+    </div>
+  </script>
+
+  <script>
+    ;(function(){
+      angular.module('NgTheListValues', ['ngTouch', 'ui.bootstrap', 'ui.router'])
+        .config(['$stateProvider', function($stateProvider){
+          $stateProvider
+            .state('thisWeek', {
+              templateUrl: 'this_week.html',
+              controller: 'NgTheListValuesThisWeekCtrl'
+            })
+            .state('all', {
+              templateUrl: 'all.html',
+              controller: 'NgTheListValuesAllCtrl'
+            })
+        }])
+        .run(function($state) {
+          $state.go('thisWeek');
+        })
+        .controller('NgTheListValuesMainCtrl', ['$scope', '$timeout', '$state',
+          function($scope, $timeout, $state){
+            // $state.go('thisWeek'); // try
+
+            $scope.swipeLeft = function($event) {
+              switchView($event, 'left');
+            };
+
+            $scope.swipeRight = function($event) {
+              switchView($event, 'right');
+            };
+
+
+            function switchView($event, direction) {
+              $event.preventDefault();
+              $event.stopPropagation();
+
+              var $container = angular.element('#container');
+              $container.addClass('move-' + direction);
+
+              $timeout(function(){
+                if ( $state.current.name == 'all' ) {
+                  $state.go('thisWeek');
+                } else if ( $state.current.name = 'thisWeek') {
+                  $state.go('all');
+                }
+
+                $container.removeClass('move-' + direction);
+
+              }, 500);
+            };
+
+        }])
+        .controller('NgTheListValuesThisWeekCtrl', ['$scope',
+          function($scope){
+            var today = new Date();
+            var msDay = 24*60*60*1000;
+            var weekStart = new Date(today - today.getDay()*msDay);
+            var weekEnd = new Date(today - today.getDay()*msDay + 6*msDay);
+            $scope.weekStart = weekStart.getMonth()+1 + '/' + weekStart.getDate();
+            $scope.weekEnd = weekEnd.getMonth()+1 + '/' + weekEnd.getDate();
+
+            var thisWeekIndex = Math.ceil(( ( (weekStart - new Date(weekStart.getFullYear(),0,1)) / 86400000) + 1)/7) - 43;
+
+            if (thisWeekIndex >= 0 && thisWeekIndex < 7) {
+              $scope.currentTopicTitle = TOPICS[0].title;
+              $scope.currentTopicText = TOPICS[0].text;
+              $scope.currentTitle = TOPICS[0].values[thisWeekIndex].title;
+              $scope.currentText = TOPICS[0].values[thisWeekIndex].text;
+            } else if (thisWeekIndex >= 7 && thisWeekIndex < 14) {
+              $scope.currentTopicTitle = TOPICS[1].title;
+              $scope.currentTopicText = TOPICS[1].text;
+              $scope.currentTitle = TOPICS[1].values[thisWeekIndex-7].title;
+              $scope.currentText = TOPICS[1].values[thisWeekIndex-7].text;
+            } else if (thisWeekIndex >= 14 && thisWeekIndex < 26) {
+              $scope.currentTopicTitle = TOPICS[2].title;
+              $scope.currentTopicText = TOPICS[2].text;
+              $scope.currentTitle = TOPICS[2].values[thisWeekIndex-14].title;
+              $scope.currentText = TOPICS[2].values[thisWeekIndex-14].text;
+            } else if (thisWeekIndex >= 26) {
+              $scope.currentTopicTitle = TOPICS[3].title;
+              $scope.currentTopicText = TOPICS[3].text;
+              $scope.currentTitle = TOPICS[3].values[thisWeekIndex-26].title;
+              $scope.currentText = TOPICS[3].values[thisWeekIndex-26].text;
+            };
+        }])
+        .controller('NgTheListValuesAllCtrl', ['$scope',
+          function($scope){
+            $scope.isCollapsed = true;
+            $scope.topics = TOPICS;
+
+            angular.element(window).bind("scroll", function() {
+              var logo_bottom = $('#header').outerHeight(true) + ($('#container').outerHeight(true) - $('#container').height())/2;
+
+              if ($(window).scrollTop() < logo_bottom) {
+                $('#this-week-link').removeClass("fixed-link");
+                $('#link-filler').height(0);
+              } else if ($(window).scrollTop() >= logo_bottom) {
+                $('#this-week-link').addClass("fixed-link");
+                $('#link-filler').height($('#this-week-link').outerHeight(true));
+              }
+            });
+        }])
+    })();
+  </script>
+
+  <script>
+    ;(function(){
+
+      window.TOPICS = [
+        {
+          title: 'Core Values',
+          text:  'These behaviors are tied directly to our core values and have been a cornerstone of our success since our founding.',
+          values: [
+            {
+              title: '1. Show pride in our ability',
+              text: "We work hard, like to learn new things, and are always on the lookout for ways to grow personally and professionally. We are proud of what we know, and use our knowledge to help our clients be more successful."
+            },
+            {
+              title: '2. Do it right the first time',
+              text: "We hate re-work, so do our best work the first time. And, before we ever hit 'send' or say a project is complete, we double- or triple-check it for quality."
+            },
+            {
+              title: '3. Love what we do and who we do it for',
+              text: "We are passionate about business development and marketing, advertising, media and technology. We stay current with these industries, and thrive on the details that make a difference to our clients."
+            },
+            {
+              title: '4. Constantly improve processes',
+              text: "Every day we seek to do things better, faster, smarter. Whenever possible, we improve using technology or more efficient processes, not adding people. We document our approaches so we can share and repeat them, and measure the impact of our improvements."
+            },
+            {
+              title: '5. Constantly improve technology',
+              text: "We are always looking for and testing new tools that may help us save time, improve efficiency, or enhance our customers' experience."
+            },
+            {
+              title: '6. Set high expectations and get things done with a sense of urgency',
+              text: "We set realistically challenging goals, and meet or exceed them, prioritizing what is most important to do every day."
+            },
+            {
+              title: '7. Embrace deep collaboration',
+              text: "We not only work well with each other, we genuinely like our team members, clients and vendors. We seek to deepen our relationships with them so we are mutually successful."
+            }
+          ]
+        },
+        {
+          title: 'Focus on Service',
+          text:  'These habits create extraordinary service experiences.',
+          values: [
+            {
+              title: '8. Delight our clients',
+              text: "The objective of every client interaction – internal or external – is to make every experience outstanding, surprising our clients with our knowledge, quality, level of service, and speed."
+            },
+            {
+              title: '9. Follow-up on everything',
+              text: "Internal and external clients rely on us, and we rely on them. Record a follow up date and time for every promised action and take responsibility for its completion."
+            },
+            {
+              title: '10. Communicate to be understood',
+              text: "Know your audience. Write and speak in a way that they will understand. Use the simplest possible explanations."
+            },
+            {
+              title: '11. Be a source of recognition',
+              text:  "Everyone craves recognition. Practice showing your appreciation for the behaviors and results demonstrated by everyone you interact with – internal or external. Provide specific, timely, sincere recognition and appreciation."
+            },
+            {
+              title: '12. Set and ask for expectations',
+              text: "We judge situations not by what happens, but by how they compare to what we expected to happen. Learn to create mutually understood expectations in every situation."
+            },
+            {
+              title: '13. Create a feeling of warmth and friendliness in every client interaction',
+              text: "Every time you interact with a prospect or client, you're on stage. This includes calls, emails, voicemails, conferences, tradeshows, and any other communication. Make dealing with you an extraordinary and memorable experience."
+            },
+            {
+              title: '14. Be your best every day',
+              text: "Practice never having a bad day. The expression, 'We make our own weather' is true, so bring a smile and positive energy to the office every day."
+            }
+          ]
+        },
+        {
+          title: 'The Collaborative Way',
+          text:  'These behaviors enable us to work powerfully together as a team.',
+          values: [
+            {
+              title: '15. Let silence do the heavy lifting',
+              text: "The only way to know what someone else thinks, believes or knows is to ask them, and then to carefully listen to what they say. You have two ears and one mouth - use them proportionally."
+            },
+            {
+              title: '16. Involve everyone',
+              text: "Everyone has ideas and wants to be involved in our success. We value each person's input, so be sure to involve those who don't say much in every discussion. It's often the quiet team members who bring the most insight."
+            },
+            {
+              title: '17. Find the root cause',
+              text: "We ask the 'Five Whys' to blamelessly understand what went wrong. Then, we seek to quickly fix the process that caused the problem."
+            },
+            {
+              title: '18. Check your ego at the door',
+              text: "Our egos and personal agendas must never take precedence over doing what's best for the team. Being concerned with who gets credit, who looks good and who looks bad, is counter-productive. Making the best decision for the good of the company must always be paramount."
+            },
+            {
+              title: '19. Seek to create win/win solutions',
+              text: "Learn to think from others' perspectives. Discover what the other person needs and find solutions that meet them, while still fulfilling our own. Win/win solutions always last longer and are more satisfying than win/lose solutions."
+            },
+            {
+              title: '20. Laugh',
+              text: "Those who laugh live a lot longer than those who don't…laugh about successes, failures, problems, challenges. Keep it fun!"
+            },
+            {
+              title: '21. Look ahead and anticipate',
+              text: "Be better prepared by anticipating what the future may bring. Avoid the mistakes that come from last-minute actions. Plan for Mr. Murphy (we all know Murphy's Law). Plan for the unexpected; be nimble when he appears."
+            },
+            {
+              title: '22. Make decisions for the long-term',
+              text: "Our primary goal is the long-term success of the company. We must view all our decisions and actions in this light."
+            },
+            {
+              title: '23. Be there for each other',
+              text: "Operate from the point of view that we're all in this together. Look for each other's greatness and provide rigorous support when needed."
+            },
+            {
+              title: '24. Honor your commitments',
+              text: "When you say you'll do something, do it. In most cases our success is influenced by the work of others, so we deliver on our promises, and expect the same from our team members."
+            },
+            {
+              title: '25. Improve the quality of your decisions',
+              text: "The quality of your decisions is directly related to the quality of your questions. Learn to ask, 'What information is missing, that if we knew, would make the best decision self-evident?'"
+            },
+            {
+              title: '26. Experiment on a regular basis',
+              text: "The only way to continuously improve is to try new things, measure the results, and then improve the process. Everything we do should be viewed as a test; nothing is permanent. If something doesn't work, change the experiment."
+            }
+          ]
+        },
+        {
+          title: 'Personal Effectiveness',
+          text:  'These behaviors help us achieve greater personal and professional success.',
+          values: [
+            {
+              title: '27. Take responsibility and be accountable',
+              text: "Don't be a victim. Ask for what you need and take full responsibility for your success. If you see a problem, own it until it's resolved."
+            },
+            {
+              title: '28. Be a coach',
+              text: "Help your team members learn and grow. We thrive as a business and as individuals when we are constantly growing and improving."
+            },
+            {
+              title: '29. Demonstrate you care',
+              text: "People don't care about how much you know until they know how much you care."
+            },
+            {
+              title: '30. Remain flexible',
+              text: "It's never too late to make the right decision. Sometimes, what we thought was the right decision, isn't. We keep our eyes open, know what we're trying to accomplish, and adjust our course if we need to."
+            },
+            {
+              title: '31. Appearance counts',
+              text: "Your personal appearance makes a strong impression about the pride you take in your performance. Dress neatly and professionally. The appearance of our office makes a similar statement about the quality of our work. Take responsibility to see that our office environment is clean, neat and professional."
+            },
+            {
+              title: '32. Your work is a marathon, not a sprint',
+              text: "Work hard and smart, but don't burn yourself out. Get your work done, on time, so you can be with family and friends, and enjoy your hobbies, sports and other interests."
+            },
+            {
+              title: '33. Take care with your language',
+              text: "We all use 'throw away phrases' that can be misinterpreted. For example, saying, 'To be honest...' means what? Why would you ever NOT be honest? Or saying, 'It's, not a problem...', why would you ever mention that something might be a problem? (Instead, borrow a phrase from the Ritz Carlton: 'It will be my pleasure.')"
+            },
+            {
+              title: '34. Improve your skills',
+              text: "Continually hone your skills to remain competitive - personally and professionally."
+            },
+            {
+              title: '35. Being organized makes a difference',
+              text: "Maintain a clean and neat work area. Use an effective task management system to keep track of outstanding issues, tasks, and responsibilities."
+            },
+            {
+              title: '36. Be flexible and adaptable',
+              text: "Embrace change, for it represents opportunity to improve and grow."
+            },
+            {
+              title: '37. Be your reputation',
+              text: "All we have in life is our reputation. Lead with your best at all times, in everything you do."
+            },
+            {
+              title: '38. Live with integrity',
+              text: "You either have it or you don't. It's that simple. If you don't, there are plenty of other places to work."
+            },
+            {
+              title: '39. Be Punctual',
+              text: "Be on time for meetings or phone calls. How you relate to time sends a message about how you relate to other commitments. Punctuality is a reflection of respect for others."
+            },
+            {
+              title: '40. Be Creative',
+              text: "Our clients, team members, and vendors want us to be creative. Before you finalize any solution, recommendation, or anything else you're doing, ask yourself if you are pushing your old habits. We often stick with the familiar without considering alternatives."
+            },
+            {
+              title: '41. Be Fearless',
+              text: "Everything you do has the potential to end in failure or great success. Fearless people focus on the desired outcome and don't spend time worrying about the down-side. Especially when 'the herd' is going one direction, you can make a different choice. Fearless people accomplish great things."
+            },
+            {
+              title: '42. Celebrate, celebrate, celebrate',
+              text: "Each accomplishment, no matter how large or small, is an opportunity to 'catch people doing it right.' Every completed task should be celebrated in some way. It's not always pizza or prizes; sincere appreciation has a bigger impact."
+            }
+          ]
+        }
+      ];
+
+    })();
+  </script>
+
+</html>
