@@ -167,8 +167,6 @@
         })
         .controller('NgTheListValuesMainCtrl', ['$scope', '$timeout', '$state',
           function($scope, $timeout, $state){
-            // $state.go('thisWeek'); // try
-
             $scope.swipeLeft = function($event) {
               switchView($event, 'left');
             };
@@ -176,7 +174,6 @@
             $scope.swipeRight = function($event) {
               switchView($event, 'right');
             };
-
 
             function switchView($event, direction) {
               $event.preventDefault();
