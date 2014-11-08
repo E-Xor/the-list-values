@@ -100,7 +100,7 @@
     <div id="header" class='row'>
       <img id="logo" src="https://s3.amazonaws.com/the-list/images/tlo-logo-white-transparent.png" alt="The List Logo">
       <h3>A Guide to Our Collective Success</h3>
-      <h5>Week {{weekStart}} - {{weekEnd}}</h5>
+      <h5>Week <span ng-bind="weekStart"></span> -  <span ng-bind="weekEnd"></span></h5>
     </div>
 
     <div class="page-switch-link">
@@ -109,18 +109,16 @@
     </div>
 
     <div>
-      <h2>{{currentTopicTitle}}</h2>
+      <h2 ng-bind="currentTopicTitle"></h2>
     </div>
     <div class="large-font">
-      <i>{{currentTopicText}}</i>
+      <i ng-bind="currentTopicText"></i>
     </div>
 
     <div>
-      <h3>{{currentTitle}}</h3>
+      <h3 ng-bind="currentTitle"></h3>
     </div>
-    <div class="large-font">
-      {{currentText}}
-    </div>
+    <div class="large-font" ng-bind="currentText"></div>
   </script>
 
   <script type="text/ng-template" id="all.html">
@@ -129,19 +127,19 @@
       <h3>A Guide to Our Collective Success</h3>
     </div>
 
-    <div class="page-switch-link" id="this-week-link">
+    <div sticky-nav class="page-switch-link">
       <a href="#" ng-click="swipeLeft($event)"><span class="glyphicon glyphicon-arrow-left"></span> Swipe for this week value <span class="glyphicon glyphicon-arrow-right"></span></a>
       <hr />
     </div>
     <div id="link-filler"></div>
 
     <div ng-repeat="topic in topics" class="topic">
-      <h2 ng-click="isCollapsed = !isCollapsed"><span class="glyphicon" ng-class="{'glyphicon-chevron-down': !isCollapsed, 'glyphicon-chevron-right': isCollapsed}"></span>&nbsp;{{topic.title}}</h2>
-      <div class="large-font" ng-click="isCollapsed = !isCollapsed"><i>{{topic.text}}</i></div>
+      <h2 ng-click="isCollapsed = !isCollapsed"><span class="glyphicon" ng-class="{'glyphicon-chevron-down': !isCollapsed, 'glyphicon-chevron-right': isCollapsed}"></span>&nbsp;<span ng-bind="topic.title"></span></h2>
+      <div class="large-font" ng-click="isCollapsed = !isCollapsed"><i ng-bind="topic.text"></i></div>
 
       <div ng-repeat="value in topic.values" collapse="isCollapsed">
-        <h3>{{value.title}}</h3>
-        <div class="large-font">{{value.text}}</div>
+        <h3 ng-bind="value.title"></h3>
+        <div class="large-font" ng-bind="value.text"></div>
       </div>
       <hr/>
     </div>
@@ -231,18 +229,25 @@
           function($scope){
             $scope.isCollapsed = true;
             $scope.topics = TOPICS;
+        }])
+        .directive('stickyNav', ['$document', function($document) {
+          return {
+            restrict: "A",
+            link: function (scope, element, attrs) {
+              $document.bind("scroll", function() {
+                var logo_bottom = $('#header').outerHeight(true) + ($('#container').outerHeight(true) - $('#container').height())/2;
 
-            angular.element(window).bind("scroll", function() {
-              var logo_bottom = $('#header').outerHeight(true) + ($('#container').outerHeight(true) - $('#container').height())/2;
+                if ($document.scrollTop() < logo_bottom) {
+                  element.removeClass("fixed-link");
+                  $('#link-filler').height(0);
+                } else if ($document.scrollTop() >= logo_bottom) {
+                  element.addClass("fixed-link");
+                  $('#link-filler').height(element.outerHeight(true));
+                }
+              });              
+            }
+          }
 
-              if ($(window).scrollTop() < logo_bottom) {
-                $('#this-week-link').removeClass("fixed-link");
-                $('#link-filler').height(0);
-              } else if ($(window).scrollTop() >= logo_bottom) {
-                $('#this-week-link').addClass("fixed-link");
-                $('#link-filler').height($('#this-week-link').outerHeight(true));
-              }
-            });
         }])
     })();
   </script>
