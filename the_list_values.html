@@ -203,27 +203,23 @@
 
             var thisWeekIndex = Math.ceil(( ( (weekStart - new Date(weekStart.getFullYear(),0,1)) / 86400000) + 1)/7) - 43;
 
-            if (thisWeekIndex >= 0 && thisWeekIndex < 7) {
-              $scope.currentTopicTitle = TOPICS[0].title;
-              $scope.currentTopicText = TOPICS[0].text;
-              $scope.currentTitle = TOPICS[0].values[thisWeekIndex].title;
-              $scope.currentText = TOPICS[0].values[thisWeekIndex].text;
-            } else if (thisWeekIndex >= 7 && thisWeekIndex < 14) {
-              $scope.currentTopicTitle = TOPICS[1].title;
-              $scope.currentTopicText = TOPICS[1].text;
-              $scope.currentTitle = TOPICS[1].values[thisWeekIndex-7].title;
-              $scope.currentText = TOPICS[1].values[thisWeekIndex-7].text;
+            var topicIndex = 0,
+                valuesIndex = thisWeekIndex;
+            if (thisWeekIndex >= 7 && thisWeekIndex < 14) {
+              topicIndex = 1;
+              valuesIndex = thisWeekIndex-7;
             } else if (thisWeekIndex >= 14 && thisWeekIndex < 26) {
-              $scope.currentTopicTitle = TOPICS[2].title;
-              $scope.currentTopicText = TOPICS[2].text;
-              $scope.currentTitle = TOPICS[2].values[thisWeekIndex-14].title;
-              $scope.currentText = TOPICS[2].values[thisWeekIndex-14].text;
+              topicIndex = 2;
+              valuesIndex = thisWeekIndex-14;
             } else if (thisWeekIndex >= 26) {
-              $scope.currentTopicTitle = TOPICS[3].title;
-              $scope.currentTopicText = TOPICS[3].text;
-              $scope.currentTitle = TOPICS[3].values[thisWeekIndex-26].title;
-              $scope.currentText = TOPICS[3].values[thisWeekIndex-26].text;
+              topicIndex = 3;
+              valuesIndex = thisWeekIndex-26;
             };
+
+            $scope.currentTopicTitle = TOPICS[topicIndex].title;
+            $scope.currentTopicText = TOPICS[topicIndex].text;
+            $scope.currentTitle = TOPICS[topicIndex].values[valuesIndex].title;
+            $scope.currentText = TOPICS[topicIndex].values[valuesIndex].text;
         }])
         .controller('NgTheListValuesAllCtrl', ['$scope',
           function($scope){
@@ -244,10 +240,9 @@
                   element.addClass("fixed-link");
                   $('#link-filler').height(element.outerHeight(true));
                 }
-              });              
+              });
             }
           }
-
         }])
     })();
   </script>
