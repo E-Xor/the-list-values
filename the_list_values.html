@@ -231,14 +231,16 @@
             restrict: "A",
             link: function (scope, element, attrs) {
               $document.bind("scroll", function() {
-                var logo_bottom = $('#header').outerHeight(true) + ($('#container').outerHeight(true) - $('#container').height())/2;
+                var $container = angular.element('#container');
+                var logoBottom = $('#header').outerHeight(true) + ($container.outerHeight(true) - $container.height())/2;
+                var $linkFiller = $('#link-filler');
 
-                if ($document.scrollTop() < logo_bottom) {
+                if ($document.scrollTop() < logoBottom) {
                   element.removeClass("fixed-link");
-                  $('#link-filler').height(0);
-                } else if ($document.scrollTop() >= logo_bottom) {
+                  $linkFiller.height(0);
+                } else {
                   element.addClass("fixed-link");
-                  $('#link-filler').height(element.outerHeight(true));
+                  $linkFiller.height(element.outerHeight(true));
                 }
               });
             }
@@ -446,6 +448,17 @@
       ];
 
     })();
+  </script>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-47374707-3', 'auto');
+    ga('send', 'pageview');
+
   </script>
 
 </html>
