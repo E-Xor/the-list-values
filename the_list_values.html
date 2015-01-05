@@ -100,7 +100,7 @@
     <div
       id="container"
       class="container-fluid col-xs-12 the-list-font"
-      ng-controller="NgTheListValuesMainCtrl" 
+      ng-controller="NgTheListValuesMainCtrl"
       ng-swipe-right="swipeRight($event)" ng-swipe-left="swipeLeft($event)"
     >
       <section ui-view></section>
@@ -212,7 +212,7 @@
             $scope.weekStart = weekStart.getMonth()+1 + '/' + weekStart.getDate();
             $scope.weekEnd = weekEnd.getMonth()+1 + '/' + weekEnd.getDate();
 
-            var thisWeekIndex = Math.ceil(( ( (weekStart - new Date(weekStart.getFullYear(),0,1)) / 86400000) + 1)/7) - 43;
+            var thisWeekIndex = Math.ceil(( ( (weekStart - new Date(weekStart.getFullYear(),0,1)) / 86400000) + 1)/7) + 52 - 43;
 
             var topicIndex = 0,
                 valuesIndex = thisWeekIndex;
