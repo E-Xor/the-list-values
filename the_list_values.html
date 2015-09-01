@@ -212,7 +212,7 @@
             $scope.weekStart = weekStart.getMonth()+1 + '/' + weekStart.getDate();
             $scope.weekEnd = weekEnd.getMonth()+1 + '/' + weekEnd.getDate();
 
-            var thisWeekIndex = Math.ceil(( ( (weekStart - new Date(weekStart.getFullYear(),0,1)) / 86400000) + 1)/7) + 52 - 43;
+            var thisWeekIndex = Math.ceil(( ( (weekStart - new Date(weekStart.getFullYear(),0,1)) / 86400000) + 1)/7) - 35;
 
             var topicIndex = 0,
                 valuesIndex = thisWeekIndex;
@@ -304,7 +304,7 @@
           values: [
             {
               title: '8. Delight our clients',
-              text: "The objective of every client interaction – internal or external – is to make every experience outstanding, surprising our clients with our knowledge, quality, level of service, and speed."
+              text: "The objective of every client interaction - internal or external - is to make every experience outstanding, surprising our clients with our knowledge, quality, level of service, and speed."
             },
             {
               title: '9. Follow-up on everything',
@@ -316,7 +316,7 @@
             },
             {
               title: '11. Be a source of recognition',
-              text:  "Everyone craves recognition. Practice showing your appreciation for the behaviors and results demonstrated by everyone you interact with – internal or external. Provide specific, timely, sincere recognition and appreciation."
+              text:  "Everyone craves recognition. Practice showing your appreciation for the behaviors and results demonstrated by everyone you interact with - internal or external. Provide specific, timely, sincere recognition and appreciation."
             },
             {
               title: '12. Set and ask for expectations',
