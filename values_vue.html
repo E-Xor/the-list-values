@@ -3,7 +3,7 @@
   <head>
     <title>The List Values</title>
 
-    <link rel="icon" type="image/png" href="http://listpartnersllc.com/favicon-96x96.png">
+    <link rel="icon" type="image/png" href="https://marketing-assets.winmo.com/wp-content/uploads/2017/11/cropped-winmo-icon-512x-32x32.png" sizes="32x32">
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-47374707-3"></script>
 
@@ -31,21 +31,22 @@
         min-height: 600px;
       }
 
-      #header {
-        background: #336A94;
-        padding-left: 20px;
+      .jumbotron-custom {
+        background: #00c0b5;
+        padding-left: 40px;
         color: white;
+        margin-right: 0px;
       }
 
       body {
-        color: #00467E;
+        color: #777777;
         font-family: "Open Sans", Arial, sans-serif;
       }
 
       #logo {
-        padding: 10px;
-        width: 60%;
-        height: 60%;
+        margin-top: 20px;
+        margin-left: 20px;
+        max-width: 350px;
       }
 
       #logo-text {
@@ -58,9 +59,14 @@
         margin: 20px;
       }
 
+      .winmo-text {
+        color: #00c0b5;
+      }
+
       .topic-text {
         margin-left: 50px;
       }
+
       .values-area {
         margin: 20px;
       }
@@ -73,6 +79,12 @@
         padding-bottom: 20px;
       }
 
+      .top-line {
+        padding-bottom: 20px;
+        margin-left: -20px;
+        margin-top: 50px;
+      }
+
       .expand-icon {
         margin-right: -20px;
       }
@@ -81,26 +93,37 @@
         margin-top: 30px;
         margin-bottom: 10px;
       }
+
+      #random-value {
+        padding-left: 20px;
+      }
     </style>
   </head>
 
   <body>
+    <div class="jumbotron mb-0 rounded-0 jumbotron-custom">
+      <div class="container-fluid">
 
-    <div class="container-fluid">
-
-      <div class="row" id="header">
-        <div class="col-xs-12">
-          <div class="row">
-            <img id="logo" src="https://s3.amazonaws.com/the-list/images/tlo-logo-white-transparent.png" alt="The List Logo">
-          </div>
-          <div class="row">
-            <h3 id="logo-text">A Guide to Our Collective Success</h3>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="row">
+              <img id="logo" src="https://marketing-assets.winmo.com/wp-content/uploads/2016/09/winmo-logo.svg" alt="Winmo Logo">
+            </div>
+            <div class="row">
+              <h3 id="logo-text">A Guide to Our Collective Success</h3>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
+    <div class="container-fluid">
       <div class="topics-area">
         <div id="vueApp">
+          <div>
+            <random-value></random-value>
+          </div>
+
           <div v-for="topic in allTopics">
             <value-group v-bind:topic="topic"></value-group>
           </div>
@@ -115,6 +138,19 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script> --><!-- dev -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js" integrity="sha256-1Q2q5hg2YXp9fYlM++sIEXOcUb8BRSDUsQ1zXvLBqmA=" crossorigin="anonymous"></script>
 
+    <script type="text/x-template" id="random-value-template">
+      <div class="row" id="random-value">
+        <div class="col-xs-12 w-100">
+          <h2>Random Value</h2>
+          <h4 class="value-title">{{value.title}}</h4>
+          <p>{{value.text}}</p>
+                  <hr class="top-line"/>
+        </div>
+
+      </div>
+
+    </script>
+
     <script type="text/x-template" id="value-group-template">
       <div class="row">
         <div class="col-xs-12 w-100">
@@ -122,9 +158,9 @@
             <h3>
               <span v-show="isOpen" class="expand-icon"><i class="fas fa-caret-down fa-lg fa-fw"></i>&nbsp;</span>
               <span v-show="!isOpen" class="expand-icon"><i class="fas fa-caret-right fa-lg fa-fw"></i>&nbsp;</span>
-              <span class="topic">{{topic.title}}</span>
+              <span>{{topic.title}}</span>
             </h3>
-            <div class="topic-text"><i>{{topic.text}}</i></div>
+            <div class="topic-text winmo-text"><i>{{topic.text}}</i></div>
           </div>
           <div class="values-area">
             <values v-bind:values-in-group="topic.values" v-bind:is-open="isOpen"></values>
@@ -360,6 +396,17 @@
           }
         });
 
+        var randomValueComponent = Vue.component("random-value", {
+          template: "#random-value-template",
+          data: function () {
+            var random_topic_values = topicsWithValues [ Math.floor(Math.random() * topicsWithValues.length) ].values
+            var random_value = random_topic_values [ Math.floor(Math.random() * random_topic_values.length) ]
+            return {
+              value: random_value
+            };
+          }
+        })
+
         var vueApp = new Vue({
           el: "#vueApp",
           data: {
@@ -367,7 +414,8 @@
           },
           components: {
             "values-component": valuesComponent,
-            "value-group-component": valueGroupComponent
+            "value-group-component": valueGroupComponent,
+            "random-value": randomValueComponent
           }
         });
 
